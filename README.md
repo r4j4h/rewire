@@ -204,6 +204,41 @@ Returns a function which - when being called - sets `obj`, executes the given `c
 
 <br />
 
+
+### Intercepting require calls
+You can intercept calls to `require` by giving `rewire` a second argument.
+
+```javascript
+var rewire = require("rewire");
+
+var myModule = rewire("../lib/myModule.js", {
+    'fs' : fsMock,
+    './otherModule.js' : { otherFunction: function(){} }
+});
+```
+
+Calls to `require` using paths found in the given object will be intercepted, and the relevant
+mock object will be returned.
+
+You can also use a function to resolve the intercepted call.
+
+
+```javascript
+var rewire = require("rewire");
+
+var myModule = rewire("../lib/myModule.js", function (path){
+    if(/otherModule/.test(path)){
+        return { otherFunction: function(){} };
+    } else {
+        return undefined;
+    }
+});
+```
+
+
+If the function's return value will be used as the mock object, if it is not `undefined`. Otherwise the original `require` function is called.
+
+
 Caveats
 -------
 
